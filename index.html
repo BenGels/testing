@@ -1,0 +1,286 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Testing Software</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/league.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+		<style>
+			.reveal section img {
+				border: 0;
+				box-shadow: 0 0 0px;
+				background: none;
+			}
+		</style>
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+
+				<section>
+					<h1>Testing Software</h1>
+					<h3>Quality from the Beginning<h3>
+				</section>
+
+				<section>
+					<h3>Developers are responsible for shipped softwares quality</h3>
+					<img src="img/quality.jpg">
+				</section>
+				
+				<section>
+					<h3>Later never comes ...</h3>
+					<img src="img/later.jpg">
+				</section>
+				
+				<section>
+					<h3>When to write tests</h3>
+					<img src="img/zeit.jpg">
+					<h4>not later than right after implementation</h4>
+				</section>
+				
+				<section>
+					<h2>It will cost Time</h2>
+					<p>but everyone will profit</p>
+				</section>
+
+				<section>
+					<h2>why do we need tests?</h2>
+					<ul>
+						<li class="fragment">find bugs</li>
+						<li class="fragment">ensure functionality</li>
+						<li class="fragment">make refactoring even possible</li>
+					</ul>
+				</section>
+
+				<section>
+					<section>
+						<h1>Types of Test</h1>
+						<img src="img/dreifaltig.gif">
+					</section>
+					
+					<section>
+						<h2>Functional</h2>
+						<h4>once a day or in loop</h4>
+						<img width="200" heigth=200 src="img/functional.png">
+					</section>
+
+					<section>
+						<h2>Integration</h2>
+						<h4>after every commit, before every merge</h4>
+						<img width="200" heigth=200  src="img/integration.png">
+					</section>
+
+					<section>
+						<h2>Unit</h2>
+						<h4>after every save, before every commit</h4>
+						<img width="200" heigth=200  src="img/unit.png">
+
+						<aside class="notes">
+							smallest unit = class (class for 1 issue)
+						</aside>
+					</section>
+				</section>
+
+				<section>
+					<h3>Avoid test bloating</h3>
+					<img src="img/Balloon.png">
+					<ul>
+						<li>modular test sets</li>
+						<li>decide which tests are important to run every time</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>false security of code coverage</h3>
+					<p><i>"Low code coverage indicate inadequat testing, <br>but high code coverage guarantees nothing"</i></p>
+
+					<aside class="notes">
+						it just says the code ran during tests, not it was tested anyhow.
+					</aside>
+				</section>
+
+				<section>
+					<h3>Test your Tests</h3>
+					<img src="img/titanic.jpg">
+					<p>try to break your colleagues test</p>
+				</section>
+
+				<section>
+					<h3>speaking fail messages</h3>
+					<img src="img/failure.png">
+					<aside class="notes">
+						<p>failing unit test should tell you the exact thing that breaks</p>
+						<p>make it easier for yourself to find it without opening test code</p>
+					</aside>					
+
+				</section>
+
+				<section>
+					<h3>Working with legacy code</h3>
+					<img src="img/spy.png">
+					<ul>
+						<li>@spy creates hybrid (partly mocked class)</li>
+						<li>not sure any more if current part mocked or not</li>
+					</ul>
+				</section>
+
+				<section>
+					<section><h3>Test best practices</h3> <img width=300 src="img/best.png"> </section>
+
+					<section>
+						<h3>Mocking return values</h3>
+							<h5>non-void methods</h5>
+							<pre><code class="hljs" data-trim contenteditable>
+when(listMock.get(anyString()))
+	.thenReturn(listEntry);
+							</code></pre>
+							<h5>void methods</h5>
+							<pre><code class="hljs" data-trim contenteditable>
+doReturn(false)
+	.when(listMock)
+	.add(anyString());
+							</code></pre>
+
+					</section>	
+
+					<section>
+						<h3>Mocking exceptions</h3>
+							<pre><code class="hljs" data-trim contenteditable>
+when(listMock.add(anyString()))
+	.thenThrow(IllegalStateException.class);
+							</code></pre>
+					</section>
+
+					<section>
+						<h3>Mocking multiple calls</h3>
+							<pre><code class="hljs" data-trim contenteditable>
+when(listMock.get(anyString()))
+	.thenReturn(listEntry)
+		.thenThrow(IllegalStateException.class);
+							</code></pre>
+					</section>
+
+					<section>
+						<h3>Use your framework (@InjectMocks)</h3>
+							<pre><code class="hljs" >public class UnitServiceTest {
+	@Mock UnitDao unitDao;
+	@Mock ClassToInstanciate cTi;
+	@InjectMocks UnitService unitService = new UnitService();
+
+	@Before void setup() {
+		MockitoAnnotations.initMocks(this);
+	}
+}
+public class UnitService {
+	private UnitService unitService;
+	private ClassToInstanciate cTi;
+
+	private ClassToInstanciate getCTI() {
+		if(cTi == null) return cTi = new ClassToInstanciate();
+	}
+}</code></pre>
+							<p>Use lazy Initializer</p>
+					</section>
+
+					<section>
+						<h3>Mock precisely</h3>
+						<h5>Makes sure the parameters are the way you expect them, control your tests</h5>
+						<pre><code class="hljs" data-trim contenteditable>
+when(mock.doWork(
+	anyString(), anyString(), anyInt(), anyBoolean()))
+	.thenReturn(listEntry);
+						</code></pre>
+						<h5>vs</h5>
+						<pre><code class="hljs" data-trim contenteditable>
+when(mock.doWork(
+	"B2B", "test@user.com", 1, true))
+	.thenReturn(listEntry);
+						</code></pre>
+					</section>		
+
+					<section>
+						<h3>Reflection Equal</h3>
+						<pre><code class="hljs" data-trim contenteditable>
+Person verifyPerson = new Person("Karthik", "abc@xyz.com");
+Mockito.verify(manager)
+	.savePerson(Mockito.refEq(verifyPerson));
+						</code></pre>
+						<p>also able to ignore fields</p>
+					</section>
+
+					<section>
+						<h3>Write your own matcher</h3>
+						<pre><code class="hljs" data-trim contenteditable>
+Mockito.verify(manager).savePerson(
+	Mockito.argThat(new ArgumentMatcher() {
+		@Override
+		public boolean matches(Object argument) {
+			Person person = (Person) argument;
+			return person.getName().equals("Karthik")
+				&& person.getEmail().equals("abc@xyz.com") 
+				? true : false;
+			}
+		}));
+						</code></pre>
+					</section>
+
+					<section>
+						<h3>Verify with verify</h3>
+						<pre><code class="hljs" data-trim contenteditable>
+verify(requestMock).getAttribute("email");
+verify(requestMock, times(2)).getAttribute(anyString());
+verify(requestMock, never()).getAttribute(anyString());
+
+verifyNoMoreInteractions(requestMock);
+						</code></pre>
+						<p>Unprecisely</p>
+						<pre><code class="hljs" data-trim contenteditable>
+verify(requestMock, atLeastOnce()).getAttribute(anyString());
+verify(requestMock, atLeast(4)).getAttribute(anyString());
+verify(requestMock, atMost(6)).getAttribute(anyString());
+						</code></pre>
+					</section>
+
+					<section>
+						<h3>never change visibility for testing!</h3>
+						<p>Test private methods through publics</p>
+					</section>
+				</section>
+
+
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+				transition: "fade",
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
