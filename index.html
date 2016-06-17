@@ -55,6 +55,10 @@
 				<section>
 					<h2>It will cost Time</h2>
 					<p>but everyone will profit</p>
+
+					<aside class="notes">
+						<p>Rechnet sich schnell wieder rein durch weniger Bugs und schnellere, sicherere Entwicklung</p>
+					</aside>
 				</section>
 
 				<section>
@@ -75,19 +79,31 @@
 					<section>
 						<h2>Functional</h2>
 						<h4>once a day or in loop</h4>
+						
 						<img width="200" heigth=200 src="img/functional.png">
+						<h4>tells you  <i>that</i>  something is wrong</h4>
+
+						<aside class="notes">
+							Endprodukt auf Funktionalität testen (Selenium) 
+						</aside>
 					</section>
 
 					<section>
 						<h2>Integration</h2>
 						<h4>after every commit, before every merge</h4>
 						<img width="200" heigth=200  src="img/integration.png">
+
+						<aside class="notes">
+							components work together, inmemory db 
+						</aside>
 					</section>
 
 					<section>
 						<h2>Unit</h2>
 						<h4>after every save, before every commit</h4>
+						
 						<img width="200" heigth=200  src="img/unit.png">
+						<h4>tells you  <i>what</i>  is wrong</h4>
 
 						<aside class="notes">
 							smallest unit = class (class for 1 issue)
@@ -105,6 +121,33 @@
 				</section>
 
 				<section>
+					<h2>Assure performance</h2>
+					<h4>Make your tests as fast as possible</h4>
+					 
+					<ul>
+						<li>avoid heavy mocking frameworks</li>
+						<li>use in memory databases for integration</li>
+					</ul>
+
+					<aside class="notes">
+						<p>immer schnelles feedback. Wenn man nach 20min merkt, dass es kauptt ist, fehlt einem meist schon der Kontext</p>
+					</aside>	
+				</section>
+
+				<section>
+					<h3>Structure your tests</h3>
+					
+					<ul>
+						<li>build logical blocks (e.g. Features)</li>
+						<li>prioritize tests (Smoke tests, legal, money)</li>
+					</ul>
+
+					<aside class="notes">
+						<p>so muss man nicht immer lokal direkt alle tests laufen lassen, wenn man in einem abgestecktem Bereich arbeitet</p>
+					</aside>
+				</section>
+
+				<section>
 					<h3>false security of code coverage</h3>
 					<p><i>"Low code coverage indicate inadequat testing, <br>but high code coverage guarantees nothing"</i></p>
 
@@ -117,6 +160,10 @@
 					<h3>Test your Tests</h3>
 					<img src="img/titanic.jpg">
 					<p>try to break your colleagues test</p>
+					<aside class="notes">
+						<p>Zeilen auskommentieren</p>
+						<p>beliebt: Tests die nichts asserten</p>
+					</aside>	
 				</section>
 
 				<section>
@@ -136,10 +183,17 @@
 						<li>@spy creates hybrid (partly mocked class)</li>
 						<li>not sure any more if current part mocked or not</li>
 					</ul>
+
+					<aside class="notes">
+						<p>nur wenn es gar nicht anders geht</p>
+					</aside>	
 				</section>
 
 				<section>
-					<section><h3>Test best practices</h3> <img width=300 src="img/best.png"> </section>
+					<section>
+						<h3>Test best practices</h3> 
+						<img width=300 src="img/best.png"> 
+					</section>
 
 					<section>
 						<h3>Mocking return values</h3>
@@ -178,7 +232,6 @@ when(listMock.get(anyString()))
 						<h3>Use your framework (@InjectMocks)</h3>
 							<pre><code class="hljs" >public class UnitServiceTest {
 	@Mock UnitDao unitDao;
-	@Mock ClassToInstanciate cTi;
 	@InjectMocks UnitService unitService = new UnitService();
 
 	@Before void setup() {
@@ -187,13 +240,9 @@ when(listMock.get(anyString()))
 }
 public class UnitService {
 	private UnitService unitService;
-	private ClassToInstanciate cTi;
-
-	private ClassToInstanciate getCTI() {
-		if(cTi == null) return cTi = new ClassToInstanciate();
-	}
-}</code></pre>
-							<p>Use lazy Initializer</p>
+}
+</code></pre>
+							 
 					</section>
 
 					<section>
@@ -256,10 +305,40 @@ verify(requestMock, atMost(6)).getAttribute(anyString());
 					</section>
 
 					<section>
-						<h3>never change visibility for testing!</h3>
-						<p>Test private methods through publics</p>
-						<p>avoid writing code just for testing purposes</p>
+						<h2>Problems of NEW</h2>
+						<h4>Creating instances in tested code may cause problems for mocking</h4>
+						<p  class="fragment">use lazy getters to maintain functionaliy and make tests possible</p>
+
+													<pre  class="fragment"><code class="hljs" >public class UnitServiceTest {
+	@Mock ClassToInstanciate cTi;
+	@InjectMocks UnitService unitService = new UnitService();
+	[...]
+}
+public class UnitService {
+	private ClassToInstanciate cTi;
+
+	private ClassToInstanciate getCTI() {
+		if(cTi == null) return cTi = new ClassToInstanciate();
+	}
+}</code></pre>
+<p  class="fragment">consider handing that object in by parameter</p>
+						<aside class="notes">
+							<p>gutes Beispiel: new Date()</p>
+							<p>may cause flapping tests</p>
+						</aside>	
+					
 					</section>
+
+					<section>
+						<h3>never change visibility for testing!</h3>
+						<p>Test private methods through publics</p> 
+					</section>
+				</section>
+
+				<section>
+						<img src="img/close.jpg">
+						<h3>Thank you!</h3> 
+						 
 				</section>
 
 
